@@ -1,0 +1,31 @@
+name: Build
+
+env:
+ ORG: siddmoitra
+
+on:
+ workflow_call:
+  inputs:
+   repo-name:
+    description: "Repository name to build"
+    required: true
+    type: string
+   branch:
+    description: "Branch for running the workflow"
+    required: true
+    type: string
+    default: "main"
+
+jobs:
+ build:
+  runs-on: ubuntu-latest
+  steps:
+   - name: Checkout code
+     uses: actions/checkout@v3
+     with:
+      repository: ${{env.ORG}}/${{ inputs.repo-name }}
+      ref: ${{ inputs.branch }}
+
+   - name: Build project
+     run: |
+      echo "Building"
