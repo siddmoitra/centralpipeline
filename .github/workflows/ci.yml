@@ -102,7 +102,7 @@ jobs:
   runs-on: ubuntu-24.04
   needs: [test]
   ## Only run the build job if the branch is main
-  if: inputs.branch == 'refs/heads/main'
+  if: inputs.branch == 'main'
   steps:
    - name: Checkout code
      uses: actions/checkout@v3
