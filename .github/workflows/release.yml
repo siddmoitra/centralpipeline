@@ -1,0 +1,34 @@
+name: Release
+
+env:
+ ORG: siddmoitra
+
+on:
+ workflow_call:
+  inputs:
+   repo-name:
+    description: "Repository name to build"
+    required: true
+    type: string
+   commit-sha:
+    description: "Commit SHA to tag and release"
+    required: true
+    type: string
+
+jobs:
+ release:
+  runs-on: ubuntu-24.04
+  steps:
+   - name: Checkout code
+     uses: actions/checkout@v3
+     with:
+      repository: ${{env.ORG}}/${{ inputs.repo-name }}
+      ref: main
+
+   - name: tag_commit_sha
+     run: |
+      echo "Tagging commit SHA ..."
+
+   - name: generate_release_notes
+     run: |
+      echo "Generate release notes ..."
