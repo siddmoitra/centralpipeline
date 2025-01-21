@@ -17,8 +17,8 @@ on:
     default: "main"
 
 jobs:
- build:
-  runs-on: ubuntu-latest
+ preflight_checks:
+  runs-on: ubuntu-24.04
   steps:
    - name: Checkout code
      uses: actions/checkout@v3
@@ -26,6 +26,103 @@ jobs:
       repository: ${{env.ORG}}/${{ inputs.repo-name }}
       ref: ${{ inputs.branch }}
 
-   - name: Build project
+   - name: lint_commit_message
      run: |
-      echo "Building"
+      echo "Verifying Git commit message ..."
+      echo "Checking for JIRA ticket in commit message ..."
+
+   - name: lint_branch_name
+     run: |
+      echo "Verifying branch naming convention ..."
+
+   - name: lint_code_style
+     run: |
+       echo "Running code linting ..."
+
+   - name: lint_api_style
+     run: |
+      echo "Running api linting ..."
+
+ code_analysis:
+  runs-on: ubuntu-24.04
+  steps:
+   - name: Checkout code
+     uses: actions/checkout@v3
+     with:
+      repository: ${{env.ORG}}/${{ inputs.repo-name }}
+      ref: ${{ inputs.branch }}
+
+   - name: run_sca
+     run: |
+      echo "Running sca ..."
+
+   - name: run_sast
+     run: |
+      echo "Running sast ..."
+
+   - name: license_scan
+     run: |
+      echo "Running license scan ..."
+
+   - name: dependency_scan
+     run: |
+      echo "Running dependency scan ..."
+
+   - name: secrets_scan
+     run: |
+      echo "Running secrets scan ..."
+
+ test:
+  runs-on: ubuntu-24.04
+  needs: [preflight_checks, code_analysis]
+  steps:
+   - name: Checkout code
+     uses: actions/checkout@v3
+     with:
+      repository: ${{env.ORG}}/${{ inputs.repo-name }}
+      ref: ${{ inputs.branch }}
+
+   - name: run_unit_test
+     run: |
+      echo "Running unit tests ..."
+
+   - name: run_api_test
+     run: |
+      echo "Running api tests ..."
+
+   - name: run_ui_test
+     run: |
+      echo "Running ui tests ..."
+
+   - name: run_integration_test
+     run: |
+      echo "Running integration tests ..."
+
+ build:
+  runs-on: ubuntu-24.04
+  needs: [test]
+  ## Only run the build job if the branch is main
+  if: inputs.branch == 'refs/heads/main'
+  steps:
+   - name: Checkout code
+     uses: actions/checkout@v3
+     with:
+      repository: ${{env.ORG}}/${{ inputs.repo-name }}
+      ref: ${{ inputs.branch }}
+
+   - name: build_scan_docker
+     run: |
+      echo "Build and Scan docker artifact ..."
+
+   - name: publish_docker
+     run: |
+      echo "Publish docker artifact ..."
+
+   - name: build_api_docs
+     run: |
+      echo "Build API docs artifact ..."
+
+   - name: publish_api_docs
+     run: |
+      echo "Publish API docs artifact ..."
+    
